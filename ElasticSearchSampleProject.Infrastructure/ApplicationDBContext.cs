@@ -5,13 +5,12 @@ namespace ElasticSearchSampleProject.Infrastructure
 {
     public class ApplicationDBContext : DbContext
     {
-
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
             : base(options)
         {
         }
 
-         public DbSet<Products> Products { get; set; }
+        public DbSet<Products> Products { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

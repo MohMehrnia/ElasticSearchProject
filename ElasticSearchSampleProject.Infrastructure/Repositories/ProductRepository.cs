@@ -19,7 +19,8 @@ namespace ElasticSearchSampleProject.Infrastructure.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<Products>> GetProductsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<List<Products>> GetProductsAsync(int pageNumber, int pageSize,
+            CancellationToken cancellationToken)
         {
             return await _context.Products.AsNoTracking() // AsNoTracking
                 .Skip((pageNumber - 1) * pageSize) // Optimized Pagination 11
@@ -28,9 +29,10 @@ namespace ElasticSearchSampleProject.Infrastructure.Repositories
         }
 
         // 3. Compiled Query
-        private static readonly Func<ApplicationDBContext, int, CancellationToken, Task<Products>> _compiledGetByIdQuery =
-            EF.CompileAsyncQuery((ApplicationDBContext ctx, int id, CancellationToken cancellationToken) =>
-                ctx.Products.AsNoTracking().FirstOrDefault(p => p.ProductID == id));
+        private static readonly Func<ApplicationDBContext, int, CancellationToken, Task<Products>>
+            _compiledGetByIdQuery =
+                EF.CompileAsyncQuery((ApplicationDBContext ctx, int id, CancellationToken cancellationToken) =>
+                    ctx.Products.AsNoTracking().FirstOrDefault(p => p.ProductID == id));
 
         public async Task<Products> GetProductByIdAsync(int id, CancellationToken cancellationToken)
         {
@@ -38,7 +40,8 @@ namespace ElasticSearchSampleProject.Infrastructure.Repositories
         }
 
         // 5. Batching with ExecuteSqlRaw
-        public async Task UpdateProductPriceAsync(int categoryId, decimal increaseAmount, CancellationToken cancellationToken)
+        public async Task UpdateProductPriceAsync(int categoryId, decimal increaseAmount,
+            CancellationToken cancellationToken)
         {
             await _context.Products
                 .Where(p => p.CategoryID == categoryId)

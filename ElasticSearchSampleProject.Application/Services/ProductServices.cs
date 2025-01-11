@@ -15,7 +15,8 @@ namespace ElasticSearchSampleProject.Application.Services
 
         private readonly ElasticsearchClient _elasticClient;
 
-        public ProductService(IProductRepository productRepository, SearchProductsHandler serachProducthandler, ElasticsearchClient elasticClient)
+        public ProductService(IProductRepository productRepository, SearchProductsHandler serachProducthandler,
+            ElasticsearchClient elasticClient)
         {
             _productRepository = productRepository;
             _serachProducthandler = serachProducthandler;
@@ -23,12 +24,14 @@ namespace ElasticSearchSampleProject.Application.Services
         }
 
         // Optimized pagination is now implemented in the repository
-        public async Task<List<Products>> GetPaginatedProductsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<List<Products>> GetPaginatedProductsAsync(int pageNumber, int pageSize,
+            CancellationToken cancellationToken)
         {
             return await _productRepository.GetProductsAsync(pageNumber, pageSize, cancellationToken);
         }
 
-        public async Task UpdateProductPricesAsync(int categoryId, decimal increaseAmount, CancellationToken cancellationToken)
+        public async Task UpdateProductPricesAsync(int categoryId, decimal increaseAmount,
+            CancellationToken cancellationToken)
         {
             await _productRepository.UpdateProductPriceAsync(categoryId, increaseAmount, cancellationToken);
         }
@@ -46,12 +49,10 @@ namespace ElasticSearchSampleProject.Application.Services
         public async Task SyncProductsToElasticsearch()
         {
             var products = await _productRepository.GetAllProductsAsync(CancellationToken.None);
-
         }
 
         public async Task<List<ProductSearchResult>> IndexProductsAsync(string searchTerm)
         {
-
             // First search in ElasticSearch
             var results = await _serachProducthandler.SearchProductsAsync(searchTerm);
             // If no results are found in ElasticSearch, fall back to the database
@@ -71,8 +72,9 @@ namespace ElasticSearchSampleProject.Application.Services
                 var bulkRequest = new BulkRequest("products")
                 {
                     Operations = new BulkOperationsCollection(
-                                     products.Select(p => new BulkIndexOperation<Products>(p)).ToList()
-                )};
+                        products.Select(p => new BulkIndexOperation<Products>(p)).ToList()
+                    )
+                };
 
                 await _elasticClient.BulkAsync(bulkRequest);
                 //Read and search data from the original database

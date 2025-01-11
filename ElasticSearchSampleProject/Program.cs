@@ -13,12 +13,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-var elasticSettings = new ElasticsearchClientSettings(new Uri(builder.Configuration["Elasticsearch:Url"]))
-    .Authentication(new BasicAuthentication(builder.Configuration["Elasticsearch:username"], builder.Configuration["Elasticsearch:Password"]))
-    .ServerCertificateValidationCallback((sender, certificate, chain, sslPolicyErrors) => true);  // Bypass SSL validation for development
+var uriString = string.Empty;
+{
+    var elasticSettings =
+        new ElasticsearchClientSettings(new Uri(builder.Configuration["Elasticsearch:Url"] ?? uriString))
+            .Authentication(new BasicAuthentication(builder.Configuration["Elasticsearch:username"] ?? uriString,
+                builder.Configuration["Elasticsearch:Password"] ?? string.Empty))
+            .ServerCertificateValidationCallback((_, _, _, _) =>
+                true); // Bypass SSL validation for development
 
 // Register the Elasticsearch client as a singleton
-builder.Services.AddSingleton(new ElasticsearchClient(elasticSettings));
+    builder.Services.AddSingleton(new ElasticsearchClient(elasticSettings));
+}
+
 builder.Services.AddScoped<SearchProductsHandler>();
 
 
@@ -30,7 +37,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register ProductRepository
-builder.Services.AddScoped<IProductRepository,ProductRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 
 var app = builder.Build();

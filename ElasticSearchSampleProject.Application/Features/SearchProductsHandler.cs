@@ -20,7 +20,7 @@ namespace ElasticSearchSampleProject.Application.Features
                 .Index("products")
                 .Query(q => q
                     .MultiMatch(m => m
-                        .Fields(new[] { "productName","categoryName" }) // Correct usage of Fields
+                        .Fields(new[] { "productName", "categoryName" }) // Correct usage of Fields
                         .Query(searchTerm)
                     )
                 )
@@ -28,11 +28,11 @@ namespace ElasticSearchSampleProject.Application.Features
 
             if (!response.IsValidResponse)
             {
-                return new List<ProductSearchResult>();//throw new Exception("Failed to search products in ElasticSearch.");
+                return
+                    new List<ProductSearchResult>(); //throw new Exception("Failed to search products in ElasticSearch.");
             }
 
             return response.Documents.ToList();
         }
     }
-
 }
